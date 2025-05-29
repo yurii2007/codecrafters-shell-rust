@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
-use std::{collections::HashSet, process};
+use std::process;
 
 fn main() {
     let stdin = io::stdin();
@@ -9,40 +9,34 @@ fn main() {
         print!("$ ");
         io::stdout().flush().unwrap();
 
-        // Wait for user input
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
 
-        let (command, user_input) = extract_command(&mut input);
+        let input = input.trim();
 
-        match command {
-            "echo" => println!("{}", user_input.unwrap_or("")),
-            "exit" => process::exit(0),
-            "type" => println!("{}", get_input_type(user_input.unwrap_or(""))),
-            _ => println!("{}: command not found", input.trim()),
+        let command: Vec<&str> = input.split(" ").collect();
+
+        match command.as_slice() {
+            [""] => continue,
+            ["echo", args @ ..] => echo_cmd(args),
+            ["type", args @ ..] => type_cmd(args),
+            ["exit", code] => process::exit(code.parse().unwrap_or(0)),
+            _ => println!("{input}: command not found"),
         }
     }
 }
 
-fn extract_command(input: &mut String) -> (&str, Option<&str>) {
-    let parsed_input = input.trim().split_once(" ");
-
-    match parsed_input {
-        Some((command, user_input)) => (command, Some(user_input)),
-        None => (input.trim(), None),
-    }
+fn echo_cmd(args: &[&str]) {
+    println!("{}", args.join(" "));
 }
 
-fn get_input_type(input: &str) -> String {
-    let mut builtins: HashSet<&str> = HashSet::new();
+fn type_cmd(args: &[&str]) {
+    if args.is_empty() {
+        return;
+    }
 
-    ["type", "echo", "exit"].into_iter().for_each(|builtin| {
-        builtins.insert(builtin);
-    });
-
-    if builtins.contains(input) {
-        format!("{} is a shell builtin", input)
-    } else {
-        format!("{}: not found", input)
+    match args[0] {
+        "type" | "echo" | "exit" => println!("{} is a shell builtin", args[0]),
+        _ => println!("{}: not found", args[0]),
     }
 }
