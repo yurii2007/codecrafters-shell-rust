@@ -2,6 +2,12 @@
 use std::io::{self, Write};
 use std::process;
 
+use echo_cmd::echo_cmd;
+use type_cmd::type_cmd;
+
+mod echo_cmd;
+mod type_cmd;
+
 fn main() {
     let stdin = io::stdin();
 
@@ -23,20 +29,5 @@ fn main() {
             ["exit", code] => process::exit(code.parse().unwrap_or(0)),
             _ => println!("{input}: command not found"),
         }
-    }
-}
-
-fn echo_cmd(args: &[&str]) {
-    println!("{}", args.join(" "));
-}
-
-fn type_cmd(args: &[&str]) {
-    if args.is_empty() {
-        return;
-    }
-
-    match args[0] {
-        "type" | "echo" | "exit" => println!("{} is a shell builtin", args[0]),
-        _ => println!("{}: not found", args[0]),
     }
 }
