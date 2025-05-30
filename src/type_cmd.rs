@@ -7,7 +7,7 @@ pub fn type_cmd(args: &[&str]) {
 
     match args[0] {
         "type" | "echo" | "exit" => println!("{} is a shell builtin", args[0]),
-        _ => check_executable(args[0]),
+        _ => check_executable(&args.join(" ")),
     }
 }
 
