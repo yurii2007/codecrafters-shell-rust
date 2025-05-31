@@ -4,9 +4,11 @@ use std::process;
 
 use echo_cmd::echo_cmd;
 use type_cmd::type_cmd;
+use exec_cmd::exec_cmd;
 
 mod echo_cmd;
 mod type_cmd;
+mod exec_cmd;
 
 fn main() {
     let stdin = io::stdin();
@@ -27,7 +29,7 @@ fn main() {
             ["echo", args @ ..] => echo_cmd(args),
             ["type", args @ ..] => type_cmd(args),
             ["exit", code] => process::exit(code.parse().unwrap_or(0)),
-            _ => println!("{input}: command not found"),
+            args => exec_cmd(args),
         }
     }
 }
