@@ -29,19 +29,14 @@ fn main() {
             ["echo", args @ ..] => echo_cmd(args),
             ["type", args @ ..] => type_cmd(args),
             ["exit", code] => process::exit(code.parse().unwrap_or(0)),
-            ["pwd", _] => {
-                println!(" go to pwd match clause");
-                match std::env::current_dir() {
-                    Ok(dir) => {
-                        println!("no error pwd");
-                        println!("{}", dir.display())
-                    }
-                    Err(e) => {
-                        println!("pwd error");
-                        println!("error reading current dir:{}", e);
-                    }
+            ["pwd", ..] => match std::env::current_dir() {
+                Ok(dir) => {
+                    println!("{}", dir.display())
                 }
-            }
+                Err(e) => {
+                    println!("error reading current dir:{}", e);
+                }
+            },
             args => exec_cmd(args),
         }
     }
