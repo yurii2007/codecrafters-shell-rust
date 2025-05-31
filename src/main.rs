@@ -37,6 +37,11 @@ fn main() {
                     println!("error reading current dir:{}", e);
                 }
             },
+            ["cd", args @ ..] => {
+                if let Err(_) = std::env::set_current_dir(args[0]) {
+                    println!("cd: {}: No such file or directory", args[0]);
+                }
+            }
             args => exec_cmd(args),
         }
     }
