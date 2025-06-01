@@ -38,7 +38,16 @@ fn main() {
                 }
             },
             ["cd", args @ ..] => {
-                if let Err(_) = std::env::set_current_dir(args[0]) {
+                let mut destination_path = String::from(args[0]);
+
+                if destination_path.starts_with("~") {
+                    if let Some(home_dir) = std::env::home_dir() {
+                        destination_path =
+                            destination_path.replace("~", &home_dir.to_string_lossy())
+                    }
+                }
+
+                if let Err(_) = std::env::set_current_dir(&destination_path) {
                     println!("cd: {}: No such file or directory", args[0]);
                 }
             }
