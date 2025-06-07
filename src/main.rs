@@ -28,7 +28,7 @@ fn main() {
                 for char in input.chars() {
                     match (char, is_quoted) {
                         ('\'', _) => is_quoted = !is_quoted,
-                        (' ', _) => {
+                        (' ', false) => {
                             if !current_arg.is_empty() {
                                 args.push(std::mem::take(&mut current_arg));
                             }
