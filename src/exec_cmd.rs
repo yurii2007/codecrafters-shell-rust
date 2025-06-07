@@ -3,17 +3,17 @@ use std::{
     process::Command,
 };
 
-pub fn exec_cmd(args: &[&str]) {
-    let mut cmd = Command::new(args[0]);
+pub fn exec_cmd(cmd: &str, args: &[String]) {
+    let mut command = Command::new(cmd);
 
-    let exec_result = cmd.args(args[1..].iter()).output();
+    let exec_result = command.args(args.iter()).output();
 
     match exec_result {
         Ok(output) => {
             let _ = stdout().write(&output.stdout);
         }
         Err(_) => {
-            println!("{}: command not found", args[0])
+            println!("{}: command not found", cmd)
         }
     }
 }

@@ -1,14 +1,11 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
-use std::process;
 
-use echo_cmd::echo_cmd;
+use builtin::exec_builtin;
 use exec_cmd::exec_cmd;
-use type_cmd::type_cmd;
 
-mod echo_cmd;
+mod builtin;
 mod exec_cmd;
-mod type_cmd;
 
 fn main() {
     let stdin = io::stdin();
@@ -22,36 +19,42 @@ fn main() {
 
         let input = input.trim();
 
-        let command: Vec<&str> = input.split(" ").collect();
+        let (cmd, args): (String, Vec<String>) = match input.split_once(" ") {
+            Some((cmd, input)) => {
+                let mut args: Vec<String> = Vec::new();
+                let mut current_arg = String::new();
+                let mut is_quoted = false;
 
-        match command.as_slice() {
-            [""] => continue,
-            ["echo", args @ ..] => echo_cmd(args),
-            ["type", args @ ..] => type_cmd(args),
-            ["exit", code] => process::exit(code.parse().unwrap_or(0)),
-            ["pwd", ..] => match std::env::current_dir() {
-                Ok(dir) => {
-                    println!("{}", dir.display())
-                }
-                Err(e) => {
-                    println!("error reading current dir:{}", e);
-                }
-            },
-            ["cd", args @ ..] => {
-                let mut destination_path = String::from(args[0]);
-
-                if destination_path.starts_with("~") {
-                    if let Some(home_dir) = std::env::home_dir() {
-                        destination_path =
-                            destination_path.replace("~", &home_dir.to_string_lossy())
+                for char in input.chars() {
+                    match (char, is_quoted) {
+                        ('\'', false) => is_quoted = true,
+                        ('\'', true) | (' ', false) => {
+                            is_quoted = false;
+                            args.push(std::mem::take(&mut current_arg));
+                        }
+                        (c, _) => current_arg.push(c),
                     }
                 }
 
-                if let Err(_) = std::env::set_current_dir(&destination_path) {
-                    println!("cd: {}: No such file or directory", args[0]);
+                if !current_arg.is_empty() {
+                    args.push(current_arg);
+                }
+
+                (cmd.to_string(), args)
+            }
+            None => {
+                if input.is_empty() {
+                    continue;
+                } else {
+                    (input.to_string(), Vec::new())
                 }
             }
-            args => exec_cmd(args),
+        };
+
+        let is_builtin = exec_builtin(&cmd, &args);
+
+        if !is_builtin {
+            exec_cmd(&cmd, &args);
         }
     }
 }

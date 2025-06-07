@@ -1,17 +1,17 @@
 use std::{env, os::unix::fs::PermissionsExt, path::Path};
 
-pub fn type_cmd(args: &[&str]) {
+pub fn type_cmd(args: &[String]) {
     if args.is_empty() {
         return;
     }
 
-    match args[0] {
-        "type" | "echo" | "exit" | "pwd" => println!("{} is a shell builtin", args[0]),
-        _ => check_executable(args[0]),
+    match args[0].as_str() {
+        "type" | "echo" | "exit" | "pwd" | "cd" => println!("{} is a shell builtin", args[0]),
+        _ => check_executable(&args[0]),
     }
 }
 
-fn check_executable(arg: &str) {
+fn check_executable(arg: &String) {
     let path = env::var("PATH");
 
     match path {
