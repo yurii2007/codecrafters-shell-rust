@@ -27,10 +27,11 @@ fn main() {
 
                 for char in input.chars() {
                     match (char, is_quoted) {
-                        ('\'', false) => is_quoted = true,
-                        ('\'', true) | (' ', false) => {
-                            is_quoted = false;
-                            args.push(std::mem::take(&mut current_arg));
+                        ('\'', _) => is_quoted = !is_quoted,
+                        (' ', _) => {
+                            if !current_arg.is_empty() {
+                                args.push(std::mem::take(&mut current_arg));
+                            }
                         }
                         (c, _) => current_arg.push(c),
                     }
