@@ -10,7 +10,7 @@ mod exit_cmd;
 mod pwd_cmd;
 mod type_cmd;
 
-pub fn exec_builtin(cmd: &str, args: &[String]) -> bool {
+pub fn exec_builtin(cmd: &str, args: &Vec<String>) -> bool {
     match cmd {
         "echo" => echo(args),
         "type" => type_cmd(args),

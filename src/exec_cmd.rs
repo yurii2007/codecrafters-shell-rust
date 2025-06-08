@@ -3,7 +3,7 @@ use std::{
     process::Command,
 };
 
-pub fn exec_cmd(cmd: &str, args: &[String]) {
+pub fn exec_cmd(cmd: &str, args: &Vec<String>) {
     let mut command = Command::new(cmd);
 
     let exec_result = command.args(args.iter()).output();

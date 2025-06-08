@@ -1,6 +1,6 @@
 use std::{env, os::unix::fs::PermissionsExt, path::Path};
 
-pub fn type_cmd(args: &[String]) {
+pub fn type_cmd(args: &Vec<String>) {
     if args.is_empty() {
         return;
     }

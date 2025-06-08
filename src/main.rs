@@ -1,11 +1,15 @@
-#[allow(unused_imports)]
+// echo "example  script"  "world""test"
+// expected  example  script worldtest
+
 use std::io::{self, Write};
 
 use builtin::exec_builtin;
 use exec_cmd::exec_cmd;
+use parse_args::parse_args;
 
 mod builtin;
 mod exec_cmd;
+mod parse_args;
 
 fn main() {
     let stdin = io::stdin();
@@ -19,38 +23,8 @@ fn main() {
 
         let input = input.trim();
 
-        let (cmd, args): (String, Vec<String>) = match input.split_once(" ") {
-            Some((cmd, input)) => {
-                let mut args: Vec<String> = Vec::new();
-                let mut current_arg = String::new();
-                let mut is_quoted = false;
-
-                for char in input.chars() {
-                    match (char, is_quoted) {
-                        ('\'', _) => is_quoted = !is_quoted,
-                        (' ', false) => {
-                            if !current_arg.is_empty() {
-                                args.push(std::mem::take(&mut current_arg));
-                            }
-                        }
-                        (c, _) => current_arg.push(c),
-                    }
-                }
-
-                if !current_arg.is_empty() {
-                    args.push(current_arg);
-                }
-
-                (cmd.to_string(), args)
-            }
-            None => {
-                if input.is_empty() {
-                    continue;
-                } else {
-                    (input.to_string(), Vec::new())
-                }
-            }
-        };
+        let (cmd, args_input) = input.split_once(" ").unwrap_or((input, ""));
+        let args = parse_args(args_input);
 
         let is_builtin = exec_builtin(&cmd, &args);
 

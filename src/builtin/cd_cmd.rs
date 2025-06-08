@@ -1,6 +1,6 @@
 use std::env;
 
-pub fn cd(args: &[String]) {
+pub fn cd(args: &Vec<String>) {
     let mut destination_path = args[0].clone();
 
     if destination_path.starts_with("~") {
