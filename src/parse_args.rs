@@ -70,11 +70,31 @@ pub fn parse_args(input: &str) -> Vec<String> {
                     current_idx += 1;
                 }
                 b'\\' => {
-                    if quote_mode.is_none() && chars.get(current_idx + 1).is_some() {
-                        current_arg.push_str(&input[current_idx + 1..current_idx + 2]);
-                        current_idx += 1;
-                    } else {
-                        current_arg.push('\\');
+                    match quote_mode {
+                        Some(QuoteMode::Double) => {
+                            if let Some(next_char) = chars.get(current_idx + 1) {
+                                match *next_char {
+                                    b'\\' | b'$' | b'"' => {
+                                        current_arg
+                                            .push_str(&input[current_idx + 1..current_idx + 2]);
+                                        current_idx += 1;
+                                    }
+                                    _ => {
+                                        current_arg.push('\\');
+                                    }
+                                }
+                            } else {
+                                current_arg.push('\\');
+                            }
+                        }
+                        _ => {
+                            if quote_mode.is_none() && chars.get(current_idx + 1).is_some() {
+                                current_arg.push_str(&input[current_idx + 1..current_idx + 2]);
+                                current_idx += 1;
+                            } else {
+                                current_arg.push('\\');
+                            }
+                        }
                     }
 
                     current_idx += 1;
