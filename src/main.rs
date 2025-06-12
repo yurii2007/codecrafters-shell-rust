@@ -1,6 +1,3 @@
-// echo "example  script"  "world""test"
-// expected  example  script worldtest
-
 use std::io::{self, Write};
 
 use builtin::exec_builtin;
@@ -22,6 +19,10 @@ fn main() {
         stdin.read_line(&mut input).unwrap();
 
         let input = input.trim();
+
+        if input.is_empty() {
+            continue;
+        }
 
         let (cmd, args_input) = input.split_once(" ").unwrap_or((input, ""));
         let args = parse_args(args_input);
