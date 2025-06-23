@@ -1,14 +1,16 @@
+use std::collections::VecDeque;
+
 enum QuoteMode {
     Single,
     Double,
 }
 
-pub fn parse_args(input: &str) -> Vec<String> {
+pub fn parse_args(input: &str) -> VecDeque<String> {
     if input.is_empty() {
-        return vec![];
+        return VecDeque::new();
     }
 
-    let mut result: Vec<String> = Vec::new();
+    let mut result: VecDeque<String> = VecDeque::new();
 
     let chars = input.as_bytes();
     let mut current_arg = String::new();
@@ -26,7 +28,7 @@ pub fn parse_args(input: &str) -> Vec<String> {
                         }
                         Some(QuoteMode::Double) => {
                             if !is_concat_toggled {
-                                result.push(std::mem::take(&mut current_arg));
+                                result.push_back(std::mem::take(&mut current_arg));
                             }
                             quote_mode = None;
                             is_concat_toggled = true;
@@ -45,7 +47,7 @@ pub fn parse_args(input: &str) -> Vec<String> {
                         }
                         Some(QuoteMode::Single) => {
                             if !is_concat_toggled {
-                                result.push(std::mem::take(&mut current_arg));
+                                result.push_back(std::mem::take(&mut current_arg));
                             }
                             quote_mode = None;
                             is_concat_toggled = true;
@@ -61,7 +63,7 @@ pub fn parse_args(input: &str) -> Vec<String> {
                     if quote_mode.is_some() {
                         current_arg.push(' ');
                     } else if !current_arg.is_empty() {
-                        result.push(std::mem::take(&mut current_arg));
+                        result.push_back(std::mem::take(&mut current_arg));
                         is_concat_toggled = !is_concat_toggled;
                     } else {
                         is_concat_toggled = false;
@@ -106,7 +108,7 @@ pub fn parse_args(input: &str) -> Vec<String> {
             },
             None => {
                 if !current_arg.is_empty() {
-                    result.push(current_arg);
+                    result.push_back(current_arg);
                 }
                 return result;
             }

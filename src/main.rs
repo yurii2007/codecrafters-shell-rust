@@ -24,13 +24,18 @@ fn main() {
             continue;
         }
 
-        let (cmd, args_input) = input.split_once(" ").unwrap_or((input, ""));
-        let args = parse_args(args_input);
+        let mut args = parse_args(input);
 
-        let is_builtin = exec_builtin(&cmd, &args);
+        if let Some(cmd) = args.pop_front() {
+            let args: Vec<String> = Vec::from(args);
 
-        if !is_builtin {
-            exec_cmd(&cmd, &args);
+            let is_builtin = exec_builtin(&cmd, &args);
+
+            if !is_builtin {
+                exec_cmd(&cmd, &args);
+            }
+        } else {
+            continue;
         }
     }
 }
